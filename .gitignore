@@ -160,3 +160,11 @@ Thumbs.db
 # Build files
 build/
 dist/
+*.egg-info/
+
+# Virtual environments
+venv/
+env/
+ENV/
+*.pyc
+__pycache__/
