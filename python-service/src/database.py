@@ -23,7 +23,8 @@ jobs_collection = db["jobs"]
 skills_collection = db["skills"]
 trends_collection = db["trends"]
 logs_collection = db["collection_logs"]
-
+#Add collection_logs collection
+collection_logs_collection = db['collection_logs']
 def test_connection():
     try:
         client.admin.command("ping")
