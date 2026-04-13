@@ -11,7 +11,7 @@ from pathlib import Path
 project_root = str(Path(__file__).resolve().parent.parent.parent)
 if project_root not in sys.path:
     sys.path.append(project_root)
-from database import jobs_collection, trends_collection
+from src.database import jobs_collection, trends_collection
 
 def predict_trend_linear(weekly_counts):
     """

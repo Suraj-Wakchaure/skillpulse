@@ -19,7 +19,7 @@ def update_missing_skills():
             {'skills': []},
             {'skills': None}
         ]
-    }).limit(300))   # 🔥 LIMIT HERE
+    }).limit(5))   # 🔥 LIMIT HERE
     
     total = len(jobs_without_skills)
     

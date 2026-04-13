@@ -36,6 +36,9 @@ jobs:
         env:
           MONGODB_URI: ${{ secrets.MONGODB_URI }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+          ADZUNA_APP_ID: ${{ secrets.ADZUNA_APP_ID }}
+          ADZUNA_API_KEY: ${{ secrets.ADZUNA_API_KEY }}
+          JSEARCH_API_KEY: ${{ secrets.JSEARCH_API_KEY }}
         run: python -m src.collect_all_jobs
 
       - name: 2. Extract Skills with Groq AI
