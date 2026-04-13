@@ -138,7 +138,7 @@ def collect_all_jobs():
     # 1. Fetch Adzuna
     print("\n➡️ Fetching from Adzuna...")
     for role in all_target_roles:
-        adzuna_jobs = fetch_adzuna_jobs(what=role, results_per_page=1)
+        adzuna_jobs = fetch_adzuna_jobs(what=role, results_per_page=20)
         if adzuna_jobs:
             sources['adzuna'] += len(adzuna_jobs)
             all_jobs.extend(adzuna_jobs)
@@ -147,14 +147,14 @@ def collect_all_jobs():
     # 2. Fetch JSearch
     print("\n➡️ Fetching from JSearch...")
     jsearch_queries = [f"{role} India" for role in all_target_roles]
-    jsearch_jobs = collect_jsearch_jobs(queries=jsearch_queries, max_per_query=1)
+    jsearch_jobs = collect_jsearch_jobs(queries=jsearch_queries, max_per_query=10)
     if jsearch_jobs:
         sources['jsearch'] += len(jsearch_jobs)
         all_jobs.extend(jsearch_jobs)
 
     # 3. Fetch Remotive
     print("\n➡️ Fetching from Remotive...")
-    remotive_jobs = collect_remotive_jobs(limit=1)
+    remotive_jobs = collect_remotive_jobs(limit=60)
     if remotive_jobs:
         sources['remotive'] += len(remotive_jobs)
         all_jobs.extend(remotive_jobs)
