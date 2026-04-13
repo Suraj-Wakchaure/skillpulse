@@ -27,7 +27,14 @@ client = Groq(api_key=os.getenv("GROQ_API_KEY"))
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
-CORS(app)  # Allow requests from HTML file
+
+# 🔥 PRODUCTION CORS SECURITY
+allowed_origins = [
+    'http://localhost:3000',              # Local React development
+    'https://skillpulse.vercel.app',      # Final Production Vercel frontend
+    r'^https://skillpulse-.*\.vercel\.app$' # Vercel preview branches
+]
+CORS(app, origins=allowed_origins, supports_credentials=True)
 
 @app.route('/api/stats', methods=['GET'])
 def get_stats():
@@ -533,4 +540,6 @@ if __name__ == '__main__':
     print("  POST /api/collect    - Trigger job collection")
     print("=" * 70)
     
-    app.run(debug=True, port=5001, host='0.0.0.0')
+    # 🔥 PRODUCTION PORT BINDING (Required for Render)
+    port = int(os.environ.get('PORT', 5001))
+    app.run(host='0.0.0.0', port=port)

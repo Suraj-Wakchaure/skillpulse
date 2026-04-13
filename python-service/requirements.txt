@@ -7,3 +7,4 @@ beautifulsoup4==4.12.2
 pandas
 scikit-learn
 groq
+gunicorn
