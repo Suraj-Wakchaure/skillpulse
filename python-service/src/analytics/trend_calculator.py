@@ -7,9 +7,41 @@ from datetime import datetime, timedelta
 from collections import defaultdict
 import sys
 import os
-sys.path.append(os.path.dirname(os.path.dirname(__file__)))
+from pathlib import Path
+project_root = str(Path(__file__).resolve().parent.parent.parent)
+if project_root not in sys.path:
+    sys.path.append(project_root)
 from database import jobs_collection, trends_collection
 
+def predict_trend_linear(weekly_counts):
+    """
+    Simple Linear Regression:
+    x = week index
+    y = skill count
+    
+    Returns slope (trend direction)
+    """
+    
+    n = len(weekly_counts)
+    
+    if n < 2:
+        return 0
+    
+    x = list(range(n))          # [0,1,2,3...]
+    y = weekly_counts          # skill counts
+    
+    x_mean = sum(x) / n
+    y_mean = sum(y) / n
+    
+    numerator = sum((x[i] - x_mean) * (y[i] - y_mean) for i in range(n))
+    denominator = sum((x[i] - x_mean) ** 2 for i in range(n))
+    
+    if denominator == 0:
+        return 0
+    
+    slope = numerator / denominator
+    
+    return round(slope, 2)
 
 def calculate_weekly_trends():
     """
@@ -28,7 +60,7 @@ def calculate_weekly_trends():
     }))
     
     if len(jobs) == 0:
-        print("\n❌ No jobs with posted_date found!")
+        print("\nNo jobs with posted_date found!")
         print("Cannot calculate trends without time-series data.")
         return
     
@@ -68,12 +100,12 @@ def calculate_weekly_trends():
     
     # Calculate trends (week-over-week changes)
     if len(sorted_weeks) < 2:
-        print("\n⚠️  Need at least 2 weeks of data to calculate trends")
+        print("\nNeed at least 2 weeks of data to calculate trends")
         print("Saving weekly aggregates for future trend calculation...")
         save_weekly_aggregates(weekly_data, sorted_weeks)
         return
     
-    print(f"\n📊 Calculating trends...")
+    print(f"\nCalculating trends...")
     
     trends = []
     
@@ -92,6 +124,14 @@ def calculate_weekly_trends():
             current_count = current_data.get(skill, 0)
             previous_count = previous_data.get(skill, 0)
             
+            # Get weekly history for this skill
+            history = []
+
+            for week in sorted_weeks:
+                history.append(weekly_data[week].get(skill, 0))
+
+            # Predict trend using linear regression
+            slope = predict_trend_linear(history)
             # FIXED: Only track skills with meaningful presence
             # Skip if total mentions across both weeks < 4
             if (current_count + previous_count) < 4:
@@ -115,9 +155,9 @@ def calculate_weekly_trends():
                 continue
             
             # Determine trend direction
-            if percent_change > 10:
+            if slope > 1:
                 direction = 'rising'
-            elif percent_change < -10:
+            elif slope < -1:
                 direction = 'declining'
             else:
                 direction = 'stable'
@@ -128,7 +168,8 @@ def calculate_weekly_trends():
                 'current_count': current_count,
                 'previous_count': previous_count,
                 'percent_change': round(percent_change, 1),
-                'direction': direction
+                'direction': direction,
+                'ml_slope': slope,
             })
     
     # Save to database
@@ -138,7 +179,7 @@ def calculate_weekly_trends():
     show_trending_summary(trends, sorted_weeks[-1])
     
     print("\n" + "=" * 70)
-    print("✅ TREND CALCULATION COMPLETE")
+    print("TREND CALCULATION COMPLETE")
     print("=" * 70)
 
 
@@ -161,7 +202,7 @@ def save_weekly_aggregates(weekly_data, weeks):
             )
             saved += 1
     
-    print(f"✅ Saved {saved} weekly skill records")
+    print(f"Saved {saved} weekly skill records")
 
 
 def save_trends(trends):
@@ -179,13 +220,14 @@ def save_trends(trends):
                     'mentionCount': trend['current_count'],
                     'percentChange': trend['percent_change'],
                     'trendDirection': trend['direction'],
+                    'ml_slope': trend.get('ml_slope', 0),
                     'calculatedAt': datetime.now()
                 }
             },
             upsert=True
         )
     
-    print(f"✅ Saved trends to database")
+    print(f"Saved trends to database")
 
 
 def show_trending_summary(trends, latest_week):
@@ -197,7 +239,7 @@ def show_trending_summary(trends, latest_week):
     if not latest_trends:
         return
     
-    print(f"\n📈 TRENDING SKILLS (Week {latest_week}):")
+    print(f"\nTRENDING SKILLS (Week {latest_week}):")
     print("=" * 70)
     
     # Top rising skills
@@ -205,21 +247,21 @@ def show_trending_summary(trends, latest_week):
                    key=lambda x: x['percent_change'], reverse=True)[:10]
     
     if rising:
-        print("\n🔥 TOP 10 RISING SKILLS:")
+        print("\nTOP 10 RISING SKILLS:")
         print("-" * 70)
         for i, trend in enumerate(rising, 1):
             change_str = f"+{trend['percent_change']:.1f}%" if trend['percent_change'] < 100 else "NEW"
-            print(f"{i:2}. {trend['skill']:30} {change_str:>8}  ({trend['previous_count']} → {trend['current_count']})")
+            print(f"{i:2}. {trend['skill']:30} {change_str:>8}  ({trend['previous_count']} → {trend['current_count']}) | ML slope: {trend.get('ml_slope', 0)}")
     
     # Top declining skills
     declining = sorted([t for t in latest_trends if t['direction'] == 'declining'], 
                       key=lambda x: x['percent_change'])[:10]
     
     if declining:
-        print("\n📉 TOP 10 DECLINING SKILLS:")
+        print("\nTOP 10 DECLINING SKILLS:")
         print("-" * 70)
         for i, trend in enumerate(declining, 1):
-            print(f"{i:2}. {trend['skill']:30} {trend['percent_change']:7.1f}%  ({trend['previous_count']} → {trend['current_count']})")
+            print(f"{i:2}. {trend['skill']:30} {trend['percent_change']:7.1f}%  ({trend['previous_count']} → {trend['current_count']}) | ML slope: {trend.get('ml_slope', 0)}")
 
 
 # Test

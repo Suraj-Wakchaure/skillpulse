@@ -36,7 +36,7 @@ def check_for_duplicates():
         })
     
     # Find groups with multiple variations
-    print("\n🔍 Potential Duplicate Skill Groups:")
+    print("\nPotential Duplicate Skill Groups:")
     print("=" * 70)
     
     duplicates_found = 0
@@ -51,7 +51,7 @@ def check_for_duplicates():
                 print(f"   - '{var['name']}': {var['count']} jobs")
     
     if duplicates_found == 0:
-        print("\n✅ No obvious duplicates found!")
+        print("\nNo obvious duplicates found!")
     else:
         print("\n" + "=" * 70)
         print(f"Found {duplicates_found} potential duplicate groups")

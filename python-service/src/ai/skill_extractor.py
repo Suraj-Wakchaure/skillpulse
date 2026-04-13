@@ -29,16 +29,28 @@ def clean_description(description):
     return clean_text.strip()
 
 
-def extract_skills_from_description(job_description):
+def extract_skills_from_description(job):
     """
     Extract technical skills using Groq Llama 3.1 70B
     """
+    title = job.get('title', '').lower()
+    description = job.get('description', '')
     
-    if not job_description or job_description == 'N/A':
+    TECH_HINTS = [
+        'developer', 'engineer', 'software',
+        'data', 'devops', 'cloud',
+        'qa', 'test', 'analyst',
+        'consultant', 'specialist', 'it'
+    ]
+
+    if not any(k in title for k in TECH_HINTS):
+        return []
+    
+    if not description or len(description) < 30:
         return []
     
     # Clean the description
-    description = clean_description(job_description)
+    description = clean_description(description)
     
     # Limit length
     description = description[:2500]
@@ -113,13 +125,19 @@ JSON array of technical skills:"""
                 for skill in skills:
                     if isinstance(skill, str):
                         skill_clean = skill.strip()
+                        
+                        
                         # Remove items that are too short, too long, or stopwords
                         if (2 < len(skill_clean) < 50 and 
                             skill_clean.lower() not in stopwords and
                             not skill_clean.lower().startswith('experience in')):
                             cleaned_skills.append(skill_clean)
                 
-                return cleaned_skills[:25]  # Allow up to 25 skills
+                from analytics.skill_normalizer import normalize_skill_list
+
+                cleaned_skills = normalize_skill_list(cleaned_skills)
+
+                return cleaned_skills[:25]
                 
             except json.JSONDecodeError:
                 # Try fixing common JSON issues
@@ -127,6 +145,11 @@ JSON array of technical skills:"""
                 try:
                     skills = json.loads(skills_json_fixed)
                     cleaned_skills = [s.strip() for s in skills if isinstance(s, str) and len(s) > 2]
+                    
+                    from analytics.skill_normalizer import normalize_skill_list
+
+                    cleaned_skills = normalize_skill_list(cleaned_skills)
+
                     return cleaned_skills[:25]
                 except:
                     pass
@@ -135,9 +158,13 @@ JSON array of technical skills:"""
         return []
             
     except Exception as e:
-        error_msg = str(e)[:100]
-        if 'rate_limit' not in error_msg.lower():  # Don't spam rate limit errors
-            print(f"   ⚠️  Error: {error_msg}")
+        error_msg = str(e).lower()
+    
+        if '429' in error_msg or 'rate limit' in error_msg:
+            print("Daily limit reached → skipping remaining...")
+            return [] # retry
+    
+        print(f"Error: {str(e)[:100]}")
         return []
 
 
@@ -146,8 +173,8 @@ def extract_skills_batch(jobs):
     Extract skills from multiple jobs with rate limiting and progress tracking
     """
     total = len(jobs)
-    print(f"🤖 Starting AI skill extraction with Groq Llama 3.1 70B...")
-    print(f"   Processing {total} jobs...")
+    print(f"Starting AI skill extraction with Groq Llama 3.1 70B...")
+    print(f"Processing {total} jobs...")
     
     successful = 0
     failed = 0
@@ -157,7 +184,7 @@ def extract_skills_batch(jobs):
         description = job.get('description', '')
         
         # Extract skills
-        skills = extract_skills_from_description(description)
+        skills = extract_skills_from_description(job)
         job['skills'] = skills
         
         if skills:
@@ -171,21 +198,21 @@ def extract_skills_batch(jobs):
             })
         
         # Rate limiting: 2 seconds between calls (30 req/min limit)
-        time.sleep(2)
+        time.sleep(3)
         
         # Progress indicator
         if idx % 5 == 0 or idx == total:
-            print(f"   Progress: {idx}/{total} | ✓ {successful} | ✗ {failed}")
+            print(f"Progress: {idx}/{total} |  Success: {successful} | Failed: {failed}")
     
     success_rate = (successful / total * 100) if total > 0 else 0
-    print(f"✅ Extraction complete: {successful}/{total} ({success_rate:.1f}% success)")
+    print(f" Extraction complete: {successful}/{total} ({success_rate:.1f}% success)")
     
     # Show failures if there are any (but not too many)
     if failed_jobs and len(failed_jobs) <= 8:
-        print(f"\n⚠️  Jobs without skills ({len(failed_jobs)}):")
+        print(f"\nJobs without skills ({len(failed_jobs)}):")
         for job in failed_jobs:
             reason = "too short" if job['desc_length'] < 50 else "no tech skills found"
-            print(f"   • {job['title']} @ {job['company']} ({reason})")
+            print(f"   - {job['title']} @ {job['company']} ({reason})")
     
     return jobs
 
@@ -215,7 +242,7 @@ if __name__ == "__main__":
     
     skills = extract_skills_from_description(test_description)
     
-    print(f"\n✅ Extracted {len(skills)} skills:")
+    print(f"\nExtracted {len(skills)} skills:")
     print("-" * 70)
     for i, skill in enumerate(skills, 1):
         print(f"{i:2}. {skill}")

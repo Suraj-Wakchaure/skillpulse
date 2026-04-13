@@ -1,174 +1,197 @@
 """
-Master Job Collector
-Orchestrates collection from all API sources
+Master Job Collector (Improved - Dynamic Roles)
 """
-
+import time
 import sys
 import os
 from datetime import datetime
-sys.path.append(os.path.dirname(__file__))
+from pathlib import Path
+from groq import Groq
+from dotenv import load_dotenv
 
-# FIXED IMPORTS - match your actual function names
-from collectors.adzuna_collector import fetch_adzuna_jobs
-from collectors.remotive_collector import collect_remotive_jobs
-from collectors.jsearch_collector import collect_jsearch_jobs
-from ai.skill_extractor import extract_skills_batch
-from database import jobs_collection, collection_logs_collection
+# Automatically find the absolute path to the 'src' folder
+project_root = str(Path(__file__).resolve().parent.parent)
+if project_root not in sys.path:
+    sys.path.append(project_root)
 
+load_dotenv()
+
+client = Groq(api_key=os.getenv("GROQ_API_KEY"))
+
+from src.collectors.adzuna_collector import fetch_adzuna_jobs
+from src.collectors.remotive_collector import collect_remotive_jobs
+from src.collectors.jsearch_collector import collect_jsearch_jobs
+from src.database import jobs_collection, collection_logs_collection
+
+# ----------------------------
+# 🔥 ROLE EXPANSION (AI)
+# ----------------------------
+def expand_role(role):
+    prompt = f"""
+Expand this tech job role into 5 related job titles.
+
+Role: {role}
+
+Only return job titles (one per line).
+"""
+    try:
+        response = client.chat.completions.create(
+            model="llama-3.3-70b-versatile",
+            messages=[{"role": "user", "content": prompt}],
+            temperature=0.3,
+            max_tokens=100
+        )
+        text = response.choices[0].message.content
+        return [line.strip() for line in text.split("\n") if line.strip()]
+    except:
+        return [role]  # fallback
+
+# ----------------------------
+# 🔁 DEDUPLICATION
+# ----------------------------
 def deduplicate_jobs(jobs):
-    """
-    Remove duplicates across all sources
-    Uses (title.lower(), company.lower()) as key
-    """
     seen = set()
     unique_jobs = []
-    
+
     for job in jobs:
-        key = (job['title'].lower().strip(), job['company'].lower().strip())
-        
+        key = (job.get('title', '').lower().strip(), job.get('company', '').lower().strip())
+
         if key not in seen:
             seen.add(key)
             unique_jobs.append(job)
-    
-    duplicates_removed = len(jobs) - len(unique_jobs)
-    
-    if duplicates_removed > 0:
-        print(f"\n🔄 Deduplication: Removed {duplicates_removed} duplicates")
-    
+
+    print(f"\nDeduplication: Removed {len(jobs) - len(unique_jobs)} duplicates")
     return unique_jobs
 
-
+# ----------------------------
+# 💾 SAVE
+# ----------------------------
 def save_jobs_batch(jobs):
-    """Save jobs to database with global deduplication"""
-    
-    if not jobs:
-        return 0
-    
     saved = 0
     duplicates = 0
-    
+
     for job in jobs:
-        # Check if job already exists in database (any source)
         existing = jobs_collection.find_one({
-            'title': job['title'],
-            'company': job['company']
+            'title': job.get('title', ''),
+            'company': job.get('company', '')
         })
-        
+
         if existing:
             duplicates += 1
         else:
             jobs_collection.insert_one(job)
             saved += 1
-    
-    print(f"   💾 Saved to DB: {saved} | Already existed: {duplicates}")
+
+    print(f"Saved to DB: {saved} | Already existed: {duplicates}")
     return saved
 
-
+# ----------------------------
+# 🚀 MAIN FUNCTION
+# ----------------------------
 def collect_all_jobs():
-    """
-    Main collection orchestrator
-    Collects from all sources, deduplicates, extracts skills
-    """
-    
     print("=" * 70)
-    print("SKILLPULSE - MULTI-SOURCE JOB COLLECTION")
+    print("SKILLPULSE - DYNAMIC JOB COLLECTION")
     print("=" * 70)
-    print(f"Started at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
-    
-    sources = {}
-    all_jobs = []
-    
-    # 1. Collect from Adzuna
-    print("\n" + "=" * 70)
-    adzuna_jobs = fetch_adzuna_jobs()  # FIXED: use fetch_adzuna_jobs
-    sources['adzuna'] = len(adzuna_jobs)
-    all_jobs.extend(adzuna_jobs)
-    
-    # 2. Collect from Remotive
-    print("\n" + "=" * 70)
-    remotive_jobs = collect_remotive_jobs(limit=100)
-    sources['remotive'] = len(remotive_jobs)
-    all_jobs.extend(remotive_jobs)
-    
-    # 3. Collect from JSearch
-    print("\n" + "=" * 70)
-    jsearch_queries = [
-        'Python developer India',
-        'JavaScript developer India',
-        'React developer India',
-        'Java developer India',
-        'Full stack developer India'
+
+    # ----------------------------
+    # 🌟 DYNAMIC ROLE GENERATION
+    # ----------------------------
+    base_domains = [
+        "Software Engineering",
+        "Data Science and Analytics",
+        "Cloud Infrastructure and DevOps",
+        "Artificial Intelligence and Machine Learning",
+        "QA Testing and Automation",
+        "UI/UX Design",
+        "Cybersecurity",
+        "Blockchain and Web3"
     ]
-    jsearch_jobs = collect_jsearch_jobs(queries=jsearch_queries, max_per_query=10)
-    sources['jsearch'] = len(jsearch_jobs)
-    all_jobs.extend(jsearch_jobs)
+
+    print("\n🧠 Asking AI to generate specific job titles from domains...")
+
+    all_target_roles = []
     
-    # Statistics
-    print("\n" + "=" * 70)
-    print("📊 COLLECTION SUMMARY")
-    print("=" * 70)
-    print(f"Adzuna:   {sources['adzuna']} jobs")
-    print(f"Remotive: {sources['remotive']} jobs")
-    print(f"JSearch:  {sources['jsearch']} jobs")
-    print(f"Total fetched: {len(all_jobs)} jobs")
-    
-    # Deduplicate across sources
-    unique_jobs = deduplicate_jobs(all_jobs)
-    print(f"After deduplication: {len(unique_jobs)} unique jobs")
-    
-    # Save to database
-    print("\n💾 Saving to database...")
-    saved = save_jobs_batch(unique_jobs)
-    
-    # AI Skill Extraction
-    if saved > 0:
-        print("\n" + "=" * 70)
-        print("🤖 EXTRACTING SKILLS WITH AI")
-        print("=" * 70)
+    for domain in base_domains:
+        print(f"Expanding domain: {domain}...")
+        specific_roles = expand_role(domain)
         
-        # Get jobs without skills (empty array or doesn't exist)
-        jobs_without_skills = list(jobs_collection.find({
-            '$or': [
-                {'skills': {'$exists': False}},
-                {'skills': []}
-            ]
-        }).limit(saved))
-        
-        if jobs_without_skills:
-            print(f"Found {len(jobs_without_skills)} jobs needing skill extraction")
-            
-            # Extract skills
-            jobs_with_skills = extract_skills_batch(jobs_without_skills)
-            
-            # Update database
-            updated = 0
-            for job in jobs_with_skills:
-                jobs_collection.update_one(
-                    {'_id': job['_id']},
-                    {'$set': {'skills': job['skills']}}
-                )
-                updated += 1
-            
-            print(f"✅ Updated {updated} jobs with extracted skills")
-    
-    # Log collection
-    log_entry = {
-        'timestamp': datetime.now(),
-        'totalFetched': len(all_jobs),
-        'afterDedup': len(unique_jobs),
-        'saved': saved,
-        'sources': sources,
-        'status': 'success'
-    }
-    collection_logs_collection.insert_one(log_entry)
-    
+        for role in specific_roles:
+            # Clean up any bullet points or numbers
+            clean_role = role.replace("- ", "").replace("* ", "").strip()
+            if len(clean_role) > 2 and clean_role[0].isdigit() and clean_role[1] in ['.', ')']:
+                clean_role = clean_role[2:].strip()
+                
+            if clean_role and clean_role not in all_target_roles:
+                all_target_roles.append(clean_role)
+                print(f"   ✓ Added: {clean_role}")
+
+    print(f"\n🎯 Total unique roles to scrape: {len(all_target_roles)}")
+
+    # ----------------------------
+    # 📥 JOB COLLECTION
+    # ----------------------------
+    all_jobs = []
+    sources = {'adzuna': 0, 'remotive': 0, 'jsearch': 0}
+
+    print("\nStarting collection across APIs...")
+
+    # 1. Fetch Adzuna
+    print("\n➡️ Fetching from Adzuna...")
+    for role in all_target_roles:
+        adzuna_jobs = fetch_adzuna_jobs(what=role, results_per_page=1)
+        if adzuna_jobs:
+            sources['adzuna'] += len(adzuna_jobs)
+            all_jobs.extend(adzuna_jobs)
+        time.sleep(1) # Be nice to the API
+
+    # 2. Fetch JSearch
+    print("\n➡️ Fetching from JSearch...")
+    jsearch_queries = [f"{role} India" for role in all_target_roles]
+    jsearch_jobs = collect_jsearch_jobs(queries=jsearch_queries, max_per_query=1)
+    if jsearch_jobs:
+        sources['jsearch'] += len(jsearch_jobs)
+        all_jobs.extend(jsearch_jobs)
+
+    # 3. Fetch Remotive
+    print("\n➡️ Fetching from Remotive...")
+    remotive_jobs = collect_remotive_jobs(limit=5)
+    if remotive_jobs:
+        sources['remotive'] += len(remotive_jobs)
+        all_jobs.extend(remotive_jobs)
+
+    # ----------------------------
+    # SUMMARY & SAVING
+    # ----------------------------
     print("\n" + "=" * 70)
-    print("✅ COLLECTION COMPLETE")
-    print("=" * 70)
-    print(f"New jobs added: {saved}")
-    print(f"Total jobs in database: {jobs_collection.count_documents({})}")
+    print("COLLECTION SUMMARY")
     print("=" * 70)
 
+    print(f"Adzuna:   {sources['adzuna']}")
+    print(f"Remotive: {sources['remotive']}")
+    print(f"JSearch:  {sources['jsearch']}")
+    print(f"Total fetched: {len(all_jobs)}")
 
+    if len(all_jobs) > 0:
+        unique_jobs = deduplicate_jobs(all_jobs)
+        print(f"After dedup: {len(unique_jobs)}")
+
+        print("\nSaving to DB...")
+        saved = save_jobs_batch(unique_jobs)
+        
+        collection_logs_collection.insert_one({
+            'timestamp': datetime.now(),
+            'totalFetched': len(all_jobs),
+            'afterDedup': len(unique_jobs),
+            'saved': saved,
+            'sources': sources,
+            'status': 'success'
+        })
+        print(f"New jobs added: {saved}")
+    else:
+        print("No jobs collected to save.")
+        
+    print(f"Total jobs in DB: {jobs_collection.count_documents({})}")
+
+# ----------------------------
 if __name__ == "__main__":
     collect_all_jobs()

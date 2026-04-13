@@ -23,6 +23,8 @@ jobs_collection = db["jobs"]
 skills_collection = db["skills"]
 trends_collection = db["trends"]
 logs_collection = db["collection_logs"]
+user_paths_collection = db['user_paths']
+users_collection = db['users']
 #Add collection_logs collection
 collection_logs_collection = db['collection_logs']
 def test_connection():

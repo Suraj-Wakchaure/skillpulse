@@ -40,7 +40,7 @@ def view_skill_stats():
     skill_counts = Counter(all_skills)
     
     # Calculate percentages
-    print(f"\n📊 TOP 20 IN-DEMAND SKILLS:")
+    print(f"\nTOP 20 IN-DEMAND SKILLS:")
     print("=" * 70)
     print(f"{'Rank':<6} {'Skill':<30} {'Jobs':<10} {'% of Jobs*':<12}")  # ← Changed header
     print("-" * 70)

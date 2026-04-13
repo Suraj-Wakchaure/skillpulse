@@ -14,7 +14,7 @@ def view_latest_trends():
     trends = list(trends_collection.find())
     
     if not trends:
-        print("\n⚠️  No trend data found!")
+        print("\nNo trend data found!")
         print("Run: python src/analytics/trend_calculator.py")
         return
     
@@ -32,13 +32,13 @@ def view_latest_trends():
     stable = [t for t in latest if t.get('trendDirection') == 'stable']
     
     print(f"\nTrend Summary:")
-    print(f"  🔥 Rising: {len(rising)} skills")
-    print(f"  📉 Declining: {len(declining)} skills")
-    print(f"  ➡️  Stable: {len(stable)} skills")
+    print(f"  Rising: {len(rising)} skills")
+    print(f"  Declining: {len(declining)} skills")
+    print(f"  Stable: {len(stable)} skills")
     
     # Show top rising
     if rising:
-        print(f"\n🔥 TOP RISING SKILLS:")
+        print(f"\nTOP RISING SKILLS:")
         print("-" * 70)
         print(f"{'Rank':<6} {'Skill':<30} {'Change':<10} {'Current Jobs'}")
         print("-" * 70)
@@ -60,7 +60,7 @@ def view_latest_trends():
     
     # Show top declining
     if declining:
-        print(f"\n📉 TOP DECLINING SKILLS:")
+        print(f"\nTOP DECLINING SKILLS:")
         print("-" * 70)
         print(f"{'Rank':<6} {'Skill':<30} {'Change':<10} {'Current Jobs'}")
         print("-" * 70)

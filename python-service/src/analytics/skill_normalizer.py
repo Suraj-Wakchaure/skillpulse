@@ -57,7 +57,7 @@ def normalize_skill(skill_name):
         word_lower = word.lower()
         
         if word_lower in UPPERCASE_SKILLS:
-            normalized_words.append(word.upper())
+            normalized_words.append(word.upper() if len(word) <= 4 else word.capitalize())
         elif any(c.isupper() for c in word[1:]):
             normalized_words.append(word)
         else:
@@ -224,7 +224,7 @@ if __name__ == "__main__":
         ("MongoDB", "MongoDB"),
     ]
     
-    print("\n1️⃣ Rule-Based Normalization:")
+    print("\nRule-Based Normalization:")
     print("-" * 70)
     for input_val, expected in test_cases:
         result = normalize_skill(input_val)
@@ -232,7 +232,7 @@ if __name__ == "__main__":
         print(f"{status} {input_val:20} → {result}")
     
     # Test similarity detection
-    print(f"\n2️⃣ Automatic Similarity Detection:")
+    print(f"\nAutomatic Similarity Detection:")
     print("-" * 70)
     
     test_skills = [

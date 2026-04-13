@@ -22,7 +22,7 @@ def show_analytics_dashboard():
     total_jobs = jobs_collection.count_documents({})
     jobs_with_skills = jobs_collection.count_documents({'skills': {'$exists': True, '$ne': []}})
     
-    print(f"\n📊 DATABASE STATISTICS:")
+    print(f"\nDATABASE STATISTICS:")
     print("-" * 70)
     print(f"Total Jobs: {total_jobs}")
     print(f"Jobs with Skills: {jobs_with_skills} ({jobs_with_skills/total_jobs*100:.1f}%)")
@@ -36,14 +36,14 @@ def show_analytics_dashboard():
     
     skill_counts = Counter(all_skills)
     
-    print(f"\n🎯 SKILL COVERAGE:")
+    print(f"\nSKILL COVERAGE:")
     print("-" * 70)
     print(f"Unique Skills Tracked: {len(skill_counts)}")
     print(f"Total Skill Mentions: {len(all_skills)}")
     print(f"Average Skills per Job: {len(all_skills)/jobs_with_skills:.1f}")
     
     # 3. Top 10 Skills
-    print(f"\n🏆 TOP 10 IN-DEMAND SKILLS:")
+    print(f"\nTOP 10 IN-DEMAND SKILLS:")
     print("-" * 70)
     print(f"{'Rank':<6} {'Skill':<30} {'Jobs':<8} {'% of Jobs'}")
     print("-" * 70)
@@ -55,7 +55,7 @@ def show_analytics_dashboard():
     # 3.5 Skill Categories (NEW)
     from analytics.skill_normalizer import get_skill_category
 
-    print(f"\n📂 SKILL CATEGORY BREAKDOWN:")
+    print(f"\nSKILL CATEGORY BREAKDOWN:")
     print("-" * 70)
 
     categories = {}
@@ -82,7 +82,7 @@ def show_analytics_dashboard():
         rising = [t for t in latest_trends if t.get('trendDirection') == 'rising']
         declining = [t for t in latest_trends if t.get('trendDirection') == 'declining']
         
-        print(f"\n📈 TREND SUMMARY (Week {latest_week}):")
+        print(f"\nTREND SUMMARY (Week {latest_week}):")
         print("-" * 70)
         print(f"Rising Skills: {len(rising)}")
         print(f"Declining Skills: {len(declining)}")
@@ -92,7 +92,7 @@ def show_analytics_dashboard():
             top_rising = sorted(rising, key=lambda x: x.get('percentChange', 0), reverse=True)[0]
             print(f"\nHottest Skill: {top_rising['skill']} (+{top_rising.get('percentChange', 0):.1f}%)")
     else:
-        print(f"\n📈 TRENDS:")
+        print(f"\nTRENDS:")
         print("-" * 70)
         print("No trend data available. Run trend calculator.")
     
@@ -102,7 +102,7 @@ def show_analytics_dashboard():
         source = job.get('source', 'Unknown')
         sources[source] = sources.get(source, 0) + 1
     
-    print(f"\n📡 DATA SOURCES:")
+    print(f"\nDATA SOURCES:")
     print("-" * 70)
     for source, count in sorted(sources.items(), key=lambda x: x[1], reverse=True):
         print(f"{source}: {count} jobs ({count/total_jobs*100:.1f}%)")
@@ -128,7 +128,7 @@ def show_analytics_dashboard():
             newest = max(dates)
             days_span = (newest - oldest).days
             
-            print(f"\n📅 TIME COVERAGE:")
+            print(f"\nTIME COVERAGE:")
             print("-" * 70)
             print(f"Oldest Job: {oldest.strftime('%Y-%m-%d')}")
             print(f"Newest Job: {newest.strftime('%Y-%m-%d')}")

@@ -25,12 +25,12 @@ def collect_jsearch_jobs(queries=['Python developer India', 'JavaScript develope
         List of job dictionaries
     """
     
-    print("🔍 Collecting jobs from JSearch API...")
+    print("Collecting jobs from JSearch API...")
     
     api_key = os.getenv('JSEARCH_API_KEY')
     
     if not api_key:
-        print("   ❌ No JSearch API key found in .env")
+        print("No JSearch API key found in .env")
         return []
     
     jobs = []
@@ -74,10 +74,10 @@ def collect_jsearch_jobs(queries=['Python developer India', 'JavaScript develope
                     
                     jobs.append(parsed_job)
             else:
-                print(f"   ⚠️  Error {response.status_code} for query: {query}")
+                print(f"Error {response.status_code} for query: {query}")
         
         except Exception as e:
-            print(f"   ❌ Error for query '{query}': {e}")
+            print(f"Error for query '{query}': {e}")
     
     return jobs
 
@@ -86,7 +86,7 @@ def save_jsearch_jobs(jobs):
     """Save jobs to database with deduplication"""
     
     if not jobs:
-        print("   No jobs to save")
+        print("No jobs to save")
         return 0
     
     saved = 0
@@ -105,7 +105,7 @@ def save_jsearch_jobs(jobs):
             jobs_collection.insert_one(job)
             saved += 1
     
-    print(f"   ✅ Saved: {saved} | Duplicates: {duplicates}")
+    print(f"Saved: {saved} | Duplicates: {duplicates}")
     return saved
 
 
@@ -126,6 +126,6 @@ if __name__ == "__main__":
     
     if jobs:
         saved = save_jsearch_jobs(jobs)
-        print(f"\n✅ Collection complete! {saved} new jobs added")
+        print(f"\nCollection complete! {saved} new jobs added")
     
     print("=" * 70)

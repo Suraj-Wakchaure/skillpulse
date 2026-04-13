@@ -53,7 +53,7 @@ def normalize_all_jobs():
     
     # Show examples
     if examples:
-        print(f"\n📝 Example Changes:")
+        print(f"\nExample Changes:")
         print("-" * 70)
         for i, ex in enumerate(examples, 1):
             print(f"\n{i}. {ex['title']}")
@@ -61,7 +61,7 @@ def normalize_all_jobs():
             print(f"   After:  {ex['after']}")
     
     print("\n" + SEP)
-    print("📊 NORMALIZATION COMPLETE")
+    print("NORMALIZATION COMPLETE")
     print(SEP)
     print(f"Total jobs: {total}")
     print(f"Jobs updated: {updated} ({updated/total*100:.1f}%)")

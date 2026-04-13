@@ -12,7 +12,7 @@ failed_jobs = list(jobs_collection.find({'skills': []}).limit(10))
 
 print(f"\nFound {jobs_collection.count_documents({'skills': []})} jobs with no skills")
 
-print("\n📋 Sample Failed Jobs:")
+print("\nSample Failed Jobs:")
 print("=" * 70)
 
 for i, job in enumerate(failed_jobs, 1):
@@ -25,7 +25,7 @@ for i, job in enumerate(failed_jobs, 1):
     print(f"   Description length: {desc_length} chars")
     
     if desc_length < 100:
-        print(f"   ⚠️  Description too short!")
+        print(f"   Description too short!")
     
     if desc_length > 0:
         print(f"   Preview: {desc[:150]}...")

@@ -12,69 +12,65 @@ load_dotenv()
 ADZUNA_APP_ID = os.getenv('ADZUNA_APP_ID')
 ADZUNA_APP_KEY = os.getenv('ADZUNA_APP_KEY')
 
-def fetch_adzuna_jobs():
-    """Fetch jobs from Adzuna API for India tech roles"""
-    print("🔄 Fetching jobs from Adzuna API...")
+def fetch_adzuna_jobs(what='developer', results_per_page=20, where='india'):
+    print(f"Fetching Adzuna jobs for: {what}")
     
-    base_url = "https://api.adzuna.com/v1/api/jobs/in/search/1"
+    url = "https://api.adzuna.com/v1/api/jobs/in/search/1"
     
-    # SIMPLIFIED SEARCH PARAMETERS
     params = {
         'app_id': ADZUNA_APP_ID,
         'app_key': ADZUNA_APP_KEY,
-        'results_per_page': 20,
-        'what': 'developer',  # Simpler search term
-        'where': 'india',     # Broader location
-        'max_days_old': 30    # Longer time range
+        'results_per_page': results_per_page,
+        'what': what,
+        'where': where,
+        'max_days_old': 30,
+        'category': 'it-jobs'
     }
     
     try:
-        response = requests.get(base_url, params=params, timeout=10)
+        response = requests.get(url, params=params, timeout=10)
         
         if response.status_code == 200:
             data = response.json()
-            
-            print(f"   API Response: {data.get('count', 0)} total jobs available")
-            
             jobs = []
+            
             for job in data.get('results', []):
-                job_data = {
+                jobs.append({
                     'title': job.get('title', 'N/A'),
                     'company': job.get('company', {}).get('display_name', 'N/A'),
                     'location': job.get('location', {}).get('display_name', 'N/A'),
                     'description': job.get('description', 'N/A'),
-                    'posted_date': job.get('created', None),
+                    'posted_date': job.get('created'),
                     'source': 'Adzuna',
-                    'url': job.get('redirect_url', 'N/A'),
-                    'scraped_at': datetime.now(),
+                    'jobUrl': job.get('redirect_url'),
+                    'scrapedAt': datetime.now(),
                     'skills': []
-                }
-                jobs.append(job_data)
+                })
             
-            print(f"✅ Successfully fetched {len(jobs)} jobs from Adzuna")
+            print(f"   Got {len(jobs)} jobs")
             return jobs
+        
         else:
-            print(f"❌ Error: Status {response.status_code}")
-            print(f"   Response: {response.text[:200]}")
+            print(f"Error: {response.status_code}")
             return []
     
     except Exception as e:
-        print(f"❌ Error: {e}")
+        print(f"Error: {e}")
         return []
 
 
 def save_jobs_to_db(jobs):
     """Save jobs to MongoDB"""
     if not jobs:
-        print("⚠️  No jobs to save")
+        print("No jobs to save")
         return 0
     
     try:
         result = jobs_collection.insert_many(jobs)
-        print(f"✅ Saved {len(result.inserted_ids)} jobs to database")
+        print(f"Saved {len(result.inserted_ids)} jobs to database")
         return len(result.inserted_ids)
     except Exception as e:
-        print(f"❌ Error saving to database: {e}")
+        print(f"Error saving to database: {e}")
         return 0
 
 
@@ -97,7 +93,7 @@ if __name__ == "__main__":
         
         # Step 4: Show summary
         print("\n" + "=" * 70)
-        print("📊 SUMMARY")
+        print("SUMMARY")
         print("=" * 70)
         print(f"Jobs Fetched: {len(jobs)}")
         print(f"AI Processed: {len(jobs_with_skills)}")
@@ -106,7 +102,7 @@ if __name__ == "__main__":
         print(f"Timestamp: {datetime.now()}")
         
         # Show samples
-        print("\n📝 Sample Jobs with Extracted Skills:")
+        print("\nSample Jobs with Extracted Skills:")
         for i, job in enumerate(jobs_with_skills[:3], 1):
             print(f"\n{i}. {job['title']} @ {job['company']}")
             print(f"   Location: {job['location']}")
@@ -114,6 +110,6 @@ if __name__ == "__main__":
             if len(job['skills']) > 10:
                 print(f"   ... and {len(job['skills']) - 10} more")
     else:
-        print("\n❌ Failed to fetch jobs.")
-        print("\n💡 TIP: Try testing the API directly in your browser:")
+        print("\nFailed to fetch jobs.")
+        print("\nTIP: Try testing the API directly in your browser:")
         print(f"https://api.adzuna.com/v1/api/jobs/in/search/1?app_id={ADZUNA_APP_ID}&app_key={ADZUNA_APP_KEY}&results_per_page=5&what=developer&where=india")

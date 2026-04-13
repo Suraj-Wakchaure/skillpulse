@@ -19,12 +19,12 @@ def update_missing_skills():
             {'skills': []},
             {'skills': None}
         ]
-    }))
+    }).limit(300))   # 🔥 LIMIT HERE
     
     total = len(jobs_without_skills)
     
     if total == 0:
-        print("✅ All jobs already have skills!")
+        print("All jobs already have skills!")
         return
     
     print(f"\nFound {total} jobs without skills")
@@ -36,10 +36,21 @@ def update_missing_skills():
     
     for idx, job in enumerate(jobs_without_skills, 1):
         job_id = job['_id']
-        description = job.get('description', '')
+        
+        # Get description safely, defaulting to empty string if it is None
+        description = job.get('description') or ''
+        job['description'] = description # Ensure the job object has a string, not None
+        
+        # Prevent massive HTML payloads from crashing the API
+        if len(description) > 10000:
+            job['description'] = description[:10000]
         
         # Extract skills
-        skills = extract_skills_from_description(description)
+        skills = extract_skills_from_description(job)
+
+        if skills is None:
+            print("Stopping due to API limit...")
+            break
         
         # Update in database
         jobs_collection.update_one(
@@ -59,11 +70,11 @@ def update_missing_skills():
             print(f"   Progress: {idx}/{total} | Updated: {updated} | Empty: {still_empty}")
         
         # Rate limit
-        time.sleep(2)
+        time.sleep(3)
     
     print()
     print("=" * 70)
-    print("📊 UPDATE COMPLETE")
+    print("UPDATE COMPLETE")
     print("=" * 70)
     print(f"Jobs processed: {total}")
     print(f"Jobs updated with skills: {updated}")

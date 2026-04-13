@@ -9,6 +9,7 @@ import os
 from datetime import datetime
 sys.path.append(os.path.dirname(os.path.dirname(__file__)))
 from database import jobs_collection
+from bs4 import BeautifulSoup
 
 def collect_remotive_jobs(limit=100):
     """
@@ -21,10 +22,10 @@ def collect_remotive_jobs(limit=100):
         List of job dictionaries
     """
     
-    print("🌍 Collecting jobs from Remotive API...")
+    print("Collecting jobs from Remotive API...")
     
     jobs = []
-    categories = ['software-dev']
+    categories = ['software-dev', 'data', 'devops']
     
     try:
         for category in categories:
@@ -44,11 +45,23 @@ def collect_remotive_jobs(limit=100):
                 print(f"   Fetched {len(api_jobs)} jobs from category: {category}")
                 
                 for job in api_jobs:
+                    # ==========================================
+                    # 🔥 HTML CLEANING LOGIC 🔥
+                    # ==========================================
+                    raw_html = job.get('description', '')
+                    if raw_html:
+                        # Strip all HTML/CSS tags and leave only plain readable text
+                        clean_description = BeautifulSoup(raw_html, "html.parser").get_text(separator=" ", strip=True)
+                        # Truncate to 6,000 chars to guarantee we never blow out the Groq token limit
+                        description = clean_description[:6000] 
+                    else:
+                        description = ""
+
                     parsed_job = {
                         'title': job.get('title', 'N/A'),
                         'company': job.get('company_name', 'N/A'),
                         'location': 'Remote',
-                        'description': job.get('description', 'N/A'),
+                        'description': description, # Now perfectly clean!
                         'experience': None,
                         'posted_date': job.get('publication_date'),
                         'source': 'Remotive',
@@ -59,10 +72,10 @@ def collect_remotive_jobs(limit=100):
                     
                     jobs.append(parsed_job)
             else:
-                print(f"   ⚠️  Error {response.status_code} for category: {category}")
+                print(f"Error {response.status_code} for category: {category}")
     
     except Exception as e:
-        print(f"   ❌ Error: {e}")
+        print(f"Error: {e}")
     
     return jobs
 
@@ -90,7 +103,7 @@ def save_remotive_jobs(jobs):
             jobs_collection.insert_one(job)
             saved += 1
     
-    print(f"   ✅ Saved: {saved} | Duplicates: {duplicates}")
+    print(f"Saved: {saved} | Duplicates: {duplicates}")
     return saved
 
 
@@ -104,6 +117,6 @@ if __name__ == "__main__":
     
     if jobs:
         saved = save_remotive_jobs(jobs)
-        print(f"\n✅ Collection complete! {saved} new jobs added")
+        print(f"\nCollection complete! {saved} new jobs added")
     
     print("=" * 70)
