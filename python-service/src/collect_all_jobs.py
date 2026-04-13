@@ -154,7 +154,7 @@ def collect_all_jobs():
 
     # 3. Fetch Remotive
     print("\n➡️ Fetching from Remotive...")
-    remotive_jobs = collect_remotive_jobs(limit=5)
+    remotive_jobs = collect_remotive_jobs(limit=1)
     if remotive_jobs:
         sources['remotive'] += len(remotive_jobs)
         all_jobs.extend(remotive_jobs)
