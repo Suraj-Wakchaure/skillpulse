@@ -6,13 +6,18 @@
 
 *From Market Trends to Your Learning Roadmap*
 
-[![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
-[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
-[![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
-[![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![Groq](https://img.shields.io/badge/Groq-FF6B00?style=for-the-badge&logo=ai&logoColor=white)](https://groq.com/)
+![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge\&logo=mongodb\&logoColor=white)
+![React](https://img.shields.io/badge/React-20232A?style=for-the-badge\&logo=react\&logoColor=61DAFB)
+![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge\&logo=nodedotjs\&logoColor=white)
+![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge\&logo=python\&logoColor=white)
+![Groq](https://img.shields.io/badge/Groq-FF6B00?style=for-the-badge)
+![Render](https://img.shields.io/badge/Render-46E3B7?style=for-the-badge\&logo=render\&logoColor=white)
+![Vercel](https://img.shields.io/badge/Vercel-000000?style=for-the-badge\&logo=vercel\&logoColor=white)
 
-**Current Status:** 🚧 In Development | Week 2 of 12
+**Current Status:** ✅ Production Ready | Deployment Complete (April 2026)
+
+[🌐 Live Application](https://skillpulse-api-2026.onrender.com)
+[🔧 Backend API](https://skillpulse-api-2026.onrender.com/api/stats)
 
 </div>
 
@@ -20,93 +25,21 @@
 
 ## 📖 About The Project
 
-**SkillPulse** is an AI-powered career intelligence platform that helps students and professionals make data-driven career decisions by analyzing real-time job market trends.
+**SkillPulse** is an AI-powered career intelligence platform developed as a BCA Final Year project. It helps students make data-driven career decisions by analyzing real-time tech job market trends in India.
 
 ### 💡 The Problem
 
-- 🤔 Students waste months learning outdated technologies
-- 📊 No real-time visibility into skill demand trends
-- 🎯 Job descriptions use vague terms without clarity
-- 📚 Courses teach yesterday's tech by the time you finish
+* 📉 Curriculum often lags behind industry
+* 📊 No clear visibility of in-demand skills
+* 🎯 Hard to create focused learning paths
 
 ### ✨ The Solution
 
-**Real-time skill trend analysis** → **Personalized gap identification** → **Data-driven learning paths**
+SkillPulse automates career research by:
 
-> Analyze 3,000+ job postings monthly using AI to extract skills, track trends, and generate personalized career roadmaps.
-
----
-
-## 🚀 Features (7 Core Features)
-
-<table>
-<tr>
-<td width="50%">
-
-### 📊 Public Trend Dashboard
-- Top 20 in-demand skills
-- Trending ↑ and declining ↓ skills
-- Weekly trend charts
-- Filter by role/domain
-
-</td>
-<td width="50%">
-
-### 🎯 Skill Gap Analysis
-- Match % against target role
-- Prioritized missing skills
-- Impact estimation
-- Learning recommendations
-
-</td>
-</tr>
-<tr>
-<td width="50%">
-
-### 📚 Learning Path Generator
-- Step-by-step roadmap
-- Free curated resources
-- Realistic timelines
-- Progress tracking
-
-</td>
-<td width="50%">
-
-### 📈 Trend Predictions
-- ML-powered forecasts (Linear Regression)
-- Emerging role detection
-- Market intelligence
-- Interactive visualizations
-
-</td>
-</tr>
-</table>
-
----
-
-## 🛠️ Tech Stack
-
-### Frontend (Coming in Week 7)
-![React](https://img.shields.io/badge/React_18-61DAFB?style=flat&logo=react&logoColor=black)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=flat&logo=tailwind-css&logoColor=white)
-![Chart.js](https://img.shields.io/badge/Chart.js-FF6384?style=flat&logo=chartdotjs&logoColor=white)
-
-### Backend ✅ (Working)
-![Node.js](https://img.shields.io/badge/Node.js_20-339933?style=flat&logo=nodedotjs&logoColor=white)
-![Express](https://img.shields.io/badge/Express-000000?style=flat&logo=express&logoColor=white)
-![MongoDB](https://img.shields.io/badge/MongoDB_Atlas-47A248?style=flat&logo=mongodb&logoColor=white)
-
-### AI & Analytics ✅ (Working)
-![Python](https://img.shields.io/badge/Python_3.11-3776AB?style=flat&logo=python&logoColor=white)
-![Groq](https://img.shields.io/badge/Groq_Llama_3.3-FF6B00?style=flat&logo=ai&logoColor=white)
-![scikit-learn](https://img.shields.io/badge/scikit--learn-F7931E?style=flat&logo=scikit-learn&logoColor=white)
-
-### Data Sources ✅ (Working)
-- **Adzuna API** - India tech jobs (primary)
-- **Remotive API** - Remote jobs (planned)
-- **GitHub Jobs API** - Developer roles (planned)
-- **JSearch API** - Aggregated data (planned)
-- **Reddit API** - r/IndiaJobs (planned)
+* Scraping job postings
+* Using AI (LLMs) to extract skills
+* Generating personalized learning roadmaps
 
 ---
 
@@ -114,156 +47,48 @@
 
 ```mermaid
 graph TD
-    A[Adzuna API] -->|Raw Job Data| B[Python Data Collector]
-    B -->|Job Descriptions| C[Groq Llama 3.3 70B]
-    C -->|Extracted Skills| D[(MongoDB Atlas)]
-    D -->|Analytics| E[Python Analytics Engine]
-    E -->|Trends & Predictions| D
-    D <-->|REST API| F[Node.js Backend]
-    F <-->|JSON| G[React Frontend]
-    G -->|UI| H[Users]
-    
-    style C fill:#FF6B00
-    style D fill:#47A248
-    style G fill:#61DAFB
+    A[Job APIs] --> B[Python Collector]
+    B --> C[Groq LLM]
+    C --> D[(MongoDB)]
+    D --> E[Analytics Engine]
+    E --> D
+    D --> F[Flask API]
+    F --> G[React Frontend]
+    G --> H[Users]
 ```
 
 ---
 
-## 📊 Current Progress (Week 2)
+## 🚀 Core Features
 
-### ✅ Completed (Days 1-4)
-
-**Day 1: Environment Setup**
-- ✅ Development environment configured
-- ✅ MongoDB Atlas cluster created
-- ✅ GitHub repository initialized
-- ✅ Project structure established
-
-**Day 2: API Integration**
-- ✅ Adzuna API integrated (5,000 calls/month free)
-- ✅ Job data collection pipeline working
-- ✅ MongoDB storage implemented
-- ✅ 130+ jobs collected
-
-**Day 3: AI Skill Extraction**
-- ✅ Groq Llama 3.3 70B integrated (14,400 requests/day)
-- ✅ 83.8% skill extraction accuracy achieved
-- ✅ 133 unique skills identified
-- ✅ HTML cleaning & data validation
-- ✅ Real-time skill demand analysis working
-
-**Day 4: Normalization & Trend Analysis** ✨ NEW
-- ✅ Skill normalization engine (rule-based + similarity detection)
-- ✅ 8 skill categories implemented (Frontend, Backend, Database, etc.)
-- ✅ Week-over-week trend calculation (5 weeks analyzed)
-- ✅ Trending UP/DOWN skill detection
-- ✅ Professional analytics dashboard
-- ✅ 59 meaningful trends tracked
-
-**Current Database Stats:**
-```
-Total Jobs: 130
-Jobs with Skills: 109 (83.8%)
-Unique Skills Tracked: 133
-Skill Categories: 8
-Average Skills per Job: 7.3
-Time Coverage: 24 days (5 weeks)
-Trend Records: 59
-```
-
-**Top 5 In-Demand Skills (Current Data):**
-1. JavaScript - 28.4%
-2. PHP - 27.5%
-3. React - 23.9%
-4. Flutter - 22.9%
-5. MongoDB - 22.0%
-
-**Skill Category Breakdown:**
-- Backend: 23.8%
-- Frontend: 16.2%
-- Database: 14.3%
-- Cloud: 8.8%
-- Mobile: 6.7%
-- DevOps: 6.5%
-
-### 🔄 In Progress (Week 3-4)
-
-**Day 5-7: Data Pipeline Enhancement**
-- ⏳ Multiple API sources (Remotive, GitHub, JSearch, Reddit)
-- ⏳ GitHub Actions automation
-- ⏳ Weekly collection scheduling
-- ⏳ Scale to 600+ jobs/week
+* 📊 **Real-Time Analytics** – Top skills & trends
+* 🎯 **Skill Gap Analysis** – Match % against jobs
+* 📚 **AI Roadmap Generator** – Personalized learning path
+* 📈 **Trend Prediction** – Future skill demand
+* ⚙️ **Automated Pipeline** – Weekly updates
 
 ---
 
-## 🚀 Getting Started
+## 🛠️ Tech Stack
 
-### Prerequisites
+### Frontend
 
-- **Node.js** v18+ ([Download](https://nodejs.org/))
-- **Python** 3.11+ ([Download](https://www.python.org/))
-- **MongoDB Atlas** account ([Sign up](https://www.mongodb.com/cloud/atlas/register))
-- **Groq API Key** ([Get Free Key](https://console.groq.com/keys))
+* React 18
+* Tailwind CSS
+* Chart.js
 
-### Installation
+### Backend
 
-**1. Clone the repository**
-```bash
-git clone https://github.com/Suraj-Wakchaure/skillpulse.git
-cd skillpulse
-```
+* Python Flask
+* Gunicorn
+* Groq LLM
+* Scikit-learn
 
-**2. Setup Backend**
-```bash
-cd backend
-npm install
-cp .env.example .env  # Add your MongoDB URI
-npm run dev
-```
+### Infrastructure
 
-**3. Setup Python Service**
-```bash
-cd python-service
-python -m venv venv
-
-# Windows
-venv\Scripts\activate
-
-# Mac/Linux
-source venv/bin/activate
-
-pip install -r requirements.txt
-cp .env.example .env  # Add your API keys
-python app.py
-```
-
-**4. Setup Frontend** *(Coming in Week 7)*
-```bash
-cd frontend
-npm install
-npm start
-```
-
-### Environment Variables
-
-**Backend (`.env`):**
-```env
-MONGODB_URI=your_mongodb_connection_string
-PORT=5000
-JWT_SECRET=your_jwt_secret
-ADZUNA_APP_ID=your_adzuna_app_id
-ADZUNA_APP_KEY=your_adzuna_app_key
-```
-
-**Python Service (`.env`):**
-```env
-MONGODB_URI=your_mongodb_connection_string
-FLASK_PORT=5001
-GROQ_API_KEY=your_groq_api_key
-ADZUNA_APP_ID=your_adzuna_app_id
-ADZUNA_APP_KEY=your_adzuna_app_key
-```
+* MongoDB Atlas
+* GitHub Actions
+* JWT Auth
 
 ---
 
@@ -271,187 +96,57 @@ ADZUNA_APP_KEY=your_adzuna_app_key
 
 ```
 skillpulse/
-├── 📱 frontend/              # React application (Week 7)
-├── 🔧 backend/               # Node.js API server
-│   ├── controllers/         # Business logic
-│   ├── models/              # Database schemas
-│   ├── routes/              # API routes
-│   ├── middleware/          # Auth, validation
-│   └── server.js            ✅ Working
-├── 🐍 python-service/        # Python analytics ✅ Working
+├── frontend/
+├── python-service/
 │   ├── src/
-│   │   ├── collectors/      # Job data collection ✅
-│   │   ├── ai/              # Skill extraction (Groq) ✅
-│   │   ├── analytics/       # Trend calculation (In Progress)
-│   │   └── database.py      ✅ MongoDB connection
-│   └── app.py               ✅ Flask server
-└── 📜 scripts/               # Automation scripts
+│   │   ├── collectors/
+│   │   ├── ai/
+│   │   └── analytics/
+│   └── app.py
+└── .github/
 ```
 
 ---
 
-## 📊 Data Pipeline
+## 🚀 Getting Started
 
-### Current Workflow
+### 1. Clone Repo
 
-```
-1. Adzuna API (Weekly)
-   ↓
-2. Python Collector (Filter India + Tech)
-   ↓
-3. Groq Llama 3.3 (Extract Skills)
-   ↓
-4. MongoDB (Store Jobs + Skills)
-   ↓
-5. Analytics Engine (Calculate Trends)
-   ↓
-6. REST API (Serve to Frontend)
+```bash
+git clone https://github.com/Suraj-Wakchaure/skillpulse.git
 ```
 
-### Data Quality Metrics
+### 2. Backend
 
-| Metric | Current | Target | Status |
-|--------|---------|--------|--------|
-| Extraction Accuracy | 83.8% | 90%+ | ✅ Good |
-| Jobs Processed | 130 | 3,000/month | 🔄 Scaling |
-| Unique Skills | 141 | 200+ | ✅ Good |
-| API Quota | 14,400/day | Sufficient | ✅ Excellent |
-
----
-
-## 🎯 Unique Value Proposition
-
-**What makes SkillPulse different from LinkedIn/Stack Overflow Survey:**
-
-| Feature | LinkedIn/Others | SkillPulse |
-|---------|-----------------|------------|
-| **Cost** | Paid reports ($500+) | 100% Free |
-| **Personalization** | Generic trends | YOUR skill gap |
-| **Action Plan** | Just data | Learning roadmap |
-| **Update Frequency** | Quarterly/Yearly | Weekly |
-| **Geographic Focus** | Global | India tech hubs |
-| **Emerging Skills** | Delayed detection | Real-time (8-12 week advantage) |
-| **Progress Tracking** | One-time report | Continuous tracking |
-
----
-
-## 🗓️ Development Timeline (12 Weeks)
-
-**Current Status: Week 2 Complete** ✅
-```
-✅ Week 1-2: Planning & Setup (COMPLETE)
-├─ ✅ Day 1: Environment Setup
-├─ ✅ Day 2: API Integration
-├─ ✅ Day 3: AI Skill Extraction (95% accuracy)
-└─ ✅ Day 4: Normalization + Trend Analysis
-
-🔄 Week 3-4: Data Collection Pipeline
-├─ ⏳ Day 5: Multiple API sources
-├─ ⏳ Day 6: Automation
-└─ ⏳ Day 7: Deduplication
-
-⏳ Week 5-6: Backend Development
-⏳ Week 7-9: Frontend Development
-⏳ Week 10: Testing & QA
-⏳ Week 11-12: Deployment & Documentation
-```
-
----
-
-## 🧪 Testing
-
-### Run Data Collection
 ```bash
 cd python-service
-python src/collectors/adzuna_collector.py
+pip install -r requirements.txt
+python app.py
 ```
 
-### View Skill Statistics
+### 3. Frontend
+
 ```bash
-python src/view_skills.py
+cd frontend
+npm install
+npm start
 ```
-
-### Update Jobs Without Skills
-```bash
-python src/update_missing_skills.py
-```
-
----
-
-## 📈 Roadmap
-
-### Immediate (Week 3-4)
-- [ ] Implement skill normalization engine
-- [ ] Add weekly trend calculation
-- [ ] Integrate 4 additional API sources
-- [ ] Setup GitHub Actions automation
-
-### Short-term (Week 5-9)
-- [ ] Complete backend authentication
-- [ ] Build REST APIs for all features
-- [ ] Develop React frontend
-- [ ] Implement Chart.js visualizations
-
-### Long-term (Week 10-12)
-- [ ] ML-based trend predictions
-- [ ] User testing with 10-15 students
-- [ ] Production deployment
-- [ ] Complete project documentation
-
----
-
-## 🤝 Contributing
-
-This is an academic project (BCA Final Year), but suggestions are welcome!
-
----
-
-## 📝 License
-
-This project is part of BCA Final Year curriculum at Pimpri Chinchwad University.  
-For academic use only.
 
 ---
 
 ## 👨‍💻 Author
 
 **Suraj Wakchaure**
+🎓 BCA Final Year – Pimpri Chinchwad University
 
-- 🎓 BCA Final Year, Pimpri Chinchwad University
-- 📧 Email: [suraj.wakchaure04@gmail.com]
-- 💼 LinkedIn: [www.linkedin.com/in/suraj-wakchaure]
-- 🐙 GitHub: [(https://github.com/Suraj-Wakchaure)]
-
-**Project Guide:** Prof. Madhuri Dharrao  
-**Project Coordinator:** Mr. Aditya Katkar
-
----
-
-## 🙏 Acknowledgments
-
-- **Pimpri Chinchwad University** - Academic support
-- **Groq** - AI infrastructure (Llama 3.3 70B)
-- **MongoDB Atlas** - Database infrastructure
-- **Adzuna** - Job market data API
-- **Open Source Community** - Libraries and tools
-
----
-
-## 📞 Contact & Support
-
-- 📧 **Email:** [suraj.wakchaure04@gmail.com]
-- 💬 **Issues:** [GitHub Issues](https://github.com/Suraj-Wakchaure/skillpulse/issues)
+* GitHub: https://github.com/Suraj-Wakchaure
+* LinkedIn: https://www.linkedin.com/in/suraj-wakchaure
 
 ---
 
 <div align="center">
 
-### ⭐ Star this repo if you find it helpful!
-
-**Made with ❤️ for students, by a student**
-
-*SkillPulse • January 2026 - April 2026*
-
-**Current Sprint:** Week 2 | AI Skill Extraction ✅ Complete
+⭐ Final Year BCA Project
+SkillPulse • 2026
 
 </div>
