@@ -8,7 +8,7 @@ export default function Trending() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    axios.get('http://localhost:5001/api/trends')
+    axios.get('https://skillpulse-api-2026.onrender.com/api/trends')
       .then(res => {
         if (res.data.success) {
           setTrends(res.data.data);

@@ -14,7 +14,7 @@ export default function LearningPath() {
 
     useEffect(() => {
         if (user?.email) {
-            axios.get(`http://localhost:5001/api/paths/${user.email}`)
+            axios.get(`https://skillpulse-api-2026.onrender.com/api/paths/${user.email}`)
                 .then(res => {
                     if (res.data.success) {
                         const paths = res.data.data.reverse();
@@ -43,7 +43,7 @@ export default function LearningPath() {
         if (!window.confirm("Are you sure you want to delete this learning track? This cannot be undone.")) return;
 
         try {
-            const res = await axios.delete(`http://localhost:5001/api/paths/${pathId}`);
+            const res = await axios.delete(`https://skillpulse-api-2026.onrender.com/api/paths/${pathId}`);
             if (res.data.success) {
                 // Remove it from the UI immediately without refreshing the page
                 const newPaths = savedPaths.filter(p => p._id !== pathId);
@@ -73,7 +73,7 @@ export default function LearningPath() {
 
         // 4. Send to database permanently
         try {
-            await axios.put(`http://localhost:5001/api/paths/${pathId}/progress`, {
+            await axios.put(`https://skillpulse-api-2026.onrender.com/api/paths/${pathId}/progress`, {
                 completed_steps: newTrackDone,
                 progress: newProgress
             });

@@ -46,7 +46,7 @@ export default function SkillGap() {
         setResults(null);
 
         try {
-            const response = await axios.post('http://localhost:5001/api/skill-gap', {
+            const response = await axios.post('https://skillpulse-api-2026.onrender.com/api/skill-gap', {
                 skills: userSkills,
                 role: targetRole
             });
@@ -75,7 +75,7 @@ export default function SkillGap() {
 
         setSaveStatus('saving');
         try {
-            const res = await axios.post('http://localhost:5001/api/paths/save', {
+            const res = await axios.post('https://skillpulse-api-2026.onrender.com/api/paths/save', {
                 email: user.email,
                 role: targetRole,
                 missing_skills: results.skills_missing

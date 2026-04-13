@@ -9,7 +9,7 @@ export default function TopSkills() {
 
   useEffect(() => {
     // Fetch top skills from your Flask backend
-    axios.get('http://localhost:5001/api/skills/top')
+    axios.get('https://skillpulse-api-2026.onrender.com/api/skills/top')
       .then(res => {
         if (res.data.success) {
           setSkills(res.data.data);

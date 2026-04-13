@@ -12,7 +12,7 @@ export default function LandingPage() {
         // Fetch live market data for the charts
         const fetchData = async () => {
             try {
-                const skillsRes = await axios.get('http://localhost:5001/api/skills/top');
+                const skillsRes = await axios.get('https://skillpulse-api-2026.onrender.com/api/skills/top');
                 if (skillsRes.data.success) {
                     // Format data for the bar chart
                     setTopSkills(skillsRes.data.data.slice(0, 6).map(item => ({
@@ -21,7 +21,7 @@ export default function LandingPage() {
                     })));
                 }
 
-                const catRes = await axios.get('http://localhost:5001/api/categories');
+                const catRes = await axios.get('https://skillpulse-api-2026.onrender.com/api/categories');
                 if (catRes.data.success) {
                     setCategories(catRes.data.data.map(item => ({
                         name: item.category,

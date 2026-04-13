@@ -19,7 +19,7 @@ export default function Signup() {
 
     try {
       // 🔥 SEND DATA TO SECURE PYTHON BACKEND 🔥
-      const res = await axios.post('http://localhost:5001/api/auth/signup', {
+      const res = await axios.post('https://skillpulse-api-2026.onrender.com/api/auth/signup', {
         name,
         email,
         password,

@@ -16,12 +16,12 @@ export default function Dashboard() {
 
   useEffect(() => {
     // Fetch DB Stats from your Flask Backend
-    axios.get('http://localhost:5001/api/stats')
+    axios.get('https://skillpulse-api-2026.onrender.com/api/stats')
       .then(res => setStats(res.data.data))
       .catch(err => console.error("Error fetching stats:", err));
 
     // Fetch Trends Chart Data from your Flask Backend
-    axios.get('http://localhost:5001/api/trends-chart')
+    axios.get('https://skillpulse-api-2026.onrender.com/api/trends-chart')
       .then(res => {
         const data = res.data.data;
         setChartData({
